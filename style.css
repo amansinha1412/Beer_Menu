@@ -1,0 +1,126 @@
+
+@font-face{
+    font-family: "Bellota-LightItalic";
+    src:url("assets/fonts/Bellota-LightItalic.otf");
+}
+@font-face{
+    font-family: "Bellota-BoldItalic";
+    src:url("assets/fonts/Bellota-BoldItalic.otf");
+}
+body{
+  background-color: #f1bf09;
+}
+#cart {
+  width: 19%;
+  max-width: 240px;
+  min-width: 50px;
+  height: 15%;
+  float: right;
+  position: relative;
+  background-color: #2a75bf;
+  color: #CBEAFB;
+  
+}
+#cart h4{
+  margin-left:100px;
+}
+#checkout { 
+  margin-left: 83px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+    
+    cursor: pointer;
+    border:none;
+    border-radius: 3px;
+    background-color: #d3d3d3;
+    font-family: 'Bellota-BoldItalic',sans-serif;
+    color:#fff;
+    text-shadow:#d3d3d3 0.5px 0.5px 0px;
+    font-size:90%;
+    
+    outline:0;
+}
+#menu {
+  position: relative;
+  float: left;
+  width: 78%;
+  font-family: 'Bellota-BoldItalic',sans-serif;
+  font-size:16px;
+  margin-left:50px;
+
+
+}
+#beer_name{
+  width:45%;
+  float:left;
+}
+#beer_style{
+  width:30%;
+  float:left;
+  
+}
+#beer_ounce{
+  width:6%;
+  float:left;
+  margin-left:20px;
+}
+#add_column{
+  width:5%;
+  float:left;
+  margin-left:20px;
+}
+
+#subtract_column{
+  width:5%;
+  float:left;
+}
+
+
+#nonveg {
+  color: red;
+  font-size: 14px;
+  float: left;
+}
+
+#veg {
+  color: green;
+  font-size: 14px;
+  float: left;
+}
+
+#add {
+  cursor: pointer;
+}
+
+#subtract {
+  cursor: pointer;
+}
+#search_list{
+background-color: #fff;
+width:178px;
+margin-left:20px;
+}
+
+#search_list div{
+  cursor:pointer;
+
+}
+.autocomplete-active {
+  background-color: DodgerBlue !important; 
+  color: #ffffff; 
+}
+.search_container{
+  float:right;
+}
+.extra {
+  margin-left:45px;
+}
+.extra input {
+  margin-left:20px;
+}
+.extra select{
+  margin-left:16px;
+}
+.search_box{
+  width:178px;
+}

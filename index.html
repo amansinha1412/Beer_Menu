@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Beer Menu</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="search.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+
+  <body>
+    <div class = "extra">
+      <form autocomplete = "off" >
+      <input type="checkbox" id = "ascending" onclick="sort_and_print(1)"> Lower
+         <input type="checkbox" id="descending" onclick="sort_and_print(0)"> Higher
+          <select name="styles" id = "styles" onChange = "print_with_name(this.value)">
+          </select>Filter
+          <input type="checkbox" id="print_all" onclick="print_all_of_them()"> ALL
+      <div class="search_container">
+        <input  class="search_box" id = "search_box"><button type='button' onclick="print_by_name(document.getElementsByTagName('input')[3].value)">Search</button>
+          <div class="search_list" id="search_list">   
+          </div>
+        </div>
+    </form>
+    </div>
+    <div id="menu">
+      <div class="beer_name" id="beer_name">
+        <h4>Name</h4>
+      </div>
+      <div class ="beer_style" id = "beer_style">
+        <h4>Style</h4>
+      </div>  
+       <div class="beer_ounce" id="beer_ounce">
+        <h4>
+          Ounce
+        </h4>
+       </div>
+       <div class="add_column" id="add_column" >
+        <h4>
+          Add
+        </h4>
+       </div> 
+       <div class="subtract_column" id="subtract_column" >
+        <h4>
+          Remove
+        </h4>
+       </div> 
+      </div>
+    <div id = "cart">
+      <h4>Cart</h4>
+      <div id="profile_right"> 
+      </div>
+      <button id="checkout" value="checkout" style="display: none">Checkout</button>
+    </div>
+
+    <script type="text/javascript">
+      const url = "http://starlord.hackerearth.com/beercraft"
+      //const ul = document.getElementById("menu");
+      autocomplete(document.getElementById("search_box"));
+      function createNode(element) {
+        return document.createElement(element);
+      }
+
+      function append(parent, el) {
+        return parent.appendChild(el);
+      }
+      /*
+      function myadd(name){
+         // var x = document.getElementsByName(name);
+          console.log(name);
+      }
+      function mysubtract(){
+         
+      }
+      */
+      
+        function dynamicSort(property) {
+            var sortOrder = 1;
+            if(property[0] === "-") {
+                sortOrder = -1;
+                property = property.substr(1);
+            }
+            return function (a,b) {
+                var result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+                return result * sortOrder;
+            }
+        }
+        function dynamicSort2(property) {
+            var sortOrder = 1;
+            if(property[0] === "-") {
+                sortOrder = -1;
+                property = property.substr(1);
+            }
+            return function (a,b) {
+                var result = (a[property] > b[property]) ? -1 : (a[property] < b[property]) ? 1 : 0;
+                return result * sortOrder;
+            }
+        }
+      function sort_and_print(flag){
+        var s = sessionStorage.getItem('foods');
+        
+        var data = JSON.parse(s);
+        if(flag==1 && document.getElementById('ascending').checked == true)
+        {
+          data.sort(dynamicSort("abv"));
+          document.getElementById('descending').checked = false;
+         }
+        else if(flag==0 && document.getElementById('descending').checked == true){
+          data.sort(dynamicSort2("abv"));
+          document.getElementById('ascending').checked = false;
+        }
+        else return;
+          let ul2 = document.getElementById("beer_name");
+          ul2.innerHTML = "<br>Name<br><br>";
+          ul2 = document.getElementById("beer_style");
+          ul2.innerHTML = "<br>Style<br><br>";
+          ul2 = document.getElementById("beer_ounce");
+          ul2.innerHTML = "<br>Ounce<br><br>";
+          ul2 = document.getElementById("add_column");
+          ul2.innerHTML = "<br>Add<br><br>";
+          ul2 = document.getElementById("subtract_column");
+          ul2.innerHTML = "<br>Remove<br><br>";
+        for(i=0;i<data.length;i++){
+             let span_name= createNode("span");
+          let span_style= createNode("span");
+          let span_ounce= createNode("span");
+          let span2 = createNode("span");
+          let span3 = createNode("span");
+          //let span4 = createNode("span");
+          span_name.innerHTML = `&nbsp${data[i].name}<br>`;
+          span_style.innerHTML = `${data[i].style}<br>`;
+          span_ounce.innerHTML = `${data[i].ounces}<br>`; 
+          span2.innerHTML = '+<br> ';
+          span3.innerHTML = '-<br>';
+
+          span2.setAttribute("id", "add");
+          span2.setAttribute("name", data[i].name);
+          span2.setAttribute("value", data[i].id);
+
+          span3.setAttribute("id", "subtract");
+          span3.setAttribute("name", data[i].name);
+          span3.setAttribute("value", data[i].id);
+          
+          let ul = document.getElementById("beer_name");
+          append(ul,span_name);
+          ul = document.getElementById("beer_style");
+          append(ul,span_style);
+          ul = document.getElementById("beer_ounce");
+          append(ul,span_ounce);
+          ul = document.getElementById("add_column");
+          append(ul,span2); 
+          ul = document.getElementById("subtract_column");
+          append(ul,span3);
+        }
+
+      }
+
+      function print_by_name(name){
+        var s = sessionStorage.getItem('names');
+        var arr = s.split(',');
+        var s1 = sessionStorage.getItem('foods_constant');
+         sessionStorage.removeItem("foods");
+         //console.log("here");
+        var data = JSON.parse(s1);
+          var foods = [];
+          let ul2 = document.getElementById("beer_name");
+          ul2.innerHTML = "<br>Name<br><br>";
+          ul2 = document.getElementById("beer_style");
+          ul2.innerHTML = "<br>Style<br><br>";
+          ul2 = document.getElementById("beer_ounce");
+          ul2.innerHTML = "<br>Ounce<br><br>";
+          ul2 = document.getElementById("add_column");
+          ul2.innerHTML = "<br>Add<br><br>";
+          ul2 = document.getElementById("subtract_column");
+          ul2.innerHTML = "<br>Remove<br><br>";
+          //alert("here");
+        for(i=0;i<data.length;i++){
+           if(data[i].name == name){
+            console.log("hi");
+            var food = {id:data[i].id,name:data[i].name,style:data[i].style,abv:data[i].abv,ibu:data[i].ibu,ounces:data[i].ounces};
+            foods.push(food);
+            let span_name= createNode("span");
+            let span_style= createNode("span");
+            let span_ounce= createNode("span");
+            let span2 = createNode("span");
+            let span3 = createNode("span");
+            //let span4 = createNode("span");
+            span_name.innerHTML = `&nbsp${data[i].name}<br>`;
+            span_style.innerHTML = `${data[i].style}<br>`;
+            span_ounce.innerHTML = `${data[i].ounces}<br>`; 
+            span2.innerHTML = '+<br> ';
+            span3.innerHTML = '-<br>';
+
+            span2.setAttribute("id", "add");
+            span2.setAttribute("name", data[i].name);
+            span2.setAttribute("value", data[i].id);
+
+            span3.setAttribute("id", "subtract");
+            span3.setAttribute("name", data[i].name);
+            span3.setAttribute("value", data[i].id);
+            
+            let ul = document.getElementById("beer_name");
+            append(ul,span_name);
+            ul = document.getElementById("beer_style");
+            append(ul,span_style);
+            ul = document.getElementById("beer_ounce");
+            append(ul,span_ounce);
+            ul = document.getElementById("add_column");
+            append(ul,span2); 
+            ul = document.getElementById("subtract_column");
+            append(ul,span3);
+        }
+      }
+      sessionStorage.setItem('foods',JSON.stringify(foods));
+      return ;
+
+       
+
+      }
+      function print_with_name(name){
+         var s = sessionStorage.getItem('foods_constant');
+         sessionStorage.removeItem("foods");
+         //console.log("here");
+        var data = JSON.parse(s);
+          var foods = [];
+          let ul2 = document.getElementById("beer_name");
+          ul2.innerHTML = "<br>Name<br><br>";
+          ul2 = document.getElementById("beer_style");
+          ul2.innerHTML = "<br>Style<br><br>";
+          ul2 = document.getElementById("beer_ounce");
+          ul2.innerHTML = "<br>Ounce<br><br>";
+          ul2 = document.getElementById("add_column");
+          ul2.innerHTML = "<br>Add<br><br>";
+          ul2 = document.getElementById("subtract_column");
+          ul2.innerHTML = "<br>Remove<br><br>";
+        for(i=0;i<data.length;i++){
+           if(data[i].style==name){
+            var food = {id:data[i].id,name:data[i].name,style:data[i].style,abv:data[i].abv,ibu:data[i].ibu,ounces:data[i].ounces};
+            foods.push(food);
+            let span_name= createNode("span");
+            let span_style= createNode("span");
+            let span_ounce= createNode("span");
+            let span2 = createNode("span");
+            let span3 = createNode("span");
+            //let span4 = createNode("span");
+            span_name.innerHTML = `&nbsp${data[i].name}<br>`;
+            span_style.innerHTML = `${data[i].style}<br>`;
+            span_ounce.innerHTML = `${data[i].ounces}<br>`; 
+            span2.innerHTML = '+<br> ';
+            span3.innerHTML = '-<br>';
+
+            span2.setAttribute("id", "add");
+            span2.setAttribute("name", data[i].name);
+            span2.setAttribute("value", data[i].id);
+
+            span3.setAttribute("id", "subtract");
+            span3.setAttribute("name", data[i].name);
+            span3.setAttribute("value", data[i].id);
+            
+            let ul = document.getElementById("beer_name");
+            append(ul,span_name);
+            ul = document.getElementById("beer_style");
+            append(ul,span_style);
+            ul = document.getElementById("beer_ounce");
+            append(ul,span_ounce);
+            ul = document.getElementById("add_column");
+            append(ul,span2); 
+            ul = document.getElementById("subtract_column");
+            append(ul,span3);
+        }
+      }
+      sessionStorage.setItem('foods',JSON.stringify(foods));
+      return ; 
+      } 
+
+      function print_all_of_them(){
+        var s1 = sessionStorage.getItem('foods_constant');
+        sessionStorage.removeItem("foods");
+         //console.log("here");
+        document.getElementById('print_all').checked = false;
+        document.getElementById('ascending').checked = false;
+        document.getElementById('descending').checked = false;
+        var data = JSON.parse(s1);
+          var foods = [];
+          let ul2 = document.getElementById("beer_name");
+          ul2.innerHTML = "<br>Name<br><br>";
+          ul2 = document.getElementById("beer_style");
+          ul2.innerHTML = "<br>Style<br><br>";
+          ul2 = document.getElementById("beer_ounce");
+          ul2.innerHTML = "<br>Ounce<br><br>";
+          ul2 = document.getElementById("add_column");
+          ul2.innerHTML = "<br>Add<br><br>";
+          ul2 = document.getElementById("subtract_column");
+          ul2.innerHTML = "<br>Remove<br><br>";
+          //alert("here");
+        for(i=0;i<data.length;i++){
+           
+           // console.log("hi");
+            var food = {id:data[i].id,name:data[i].name,style:data[i].style,abv:data[i].abv,ibu:data[i].ibu,ounces:data[i].ounces};
+            foods.push(food);
+            let span_name= createNode("span");
+            let span_style= createNode("span");
+            let span_ounce= createNode("span");
+            let span2 = createNode("span");
+            let span3 = createNode("span");
+            //let span4 = createNode("span");
+            span_name.innerHTML = `&nbsp${data[i].name}<br>`;
+            span_style.innerHTML = `${data[i].style}<br>`;
+            span_ounce.innerHTML = `${data[i].ounces}<br>`; 
+            span2.innerHTML = '+<br> ';
+            span3.innerHTML = '-<br>';
+
+            span2.setAttribute("id", "add");
+            span2.setAttribute("name", data[i].name);
+            span2.setAttribute("value", data[i].id);
+
+            span3.setAttribute("id", "subtract");
+            span3.setAttribute("name", data[i].name);
+            span3.setAttribute("value", data[i].id);
+            
+            let ul = document.getElementById("beer_name");
+            append(ul,span_name);
+            ul = document.getElementById("beer_style");
+            append(ul,span_style);
+            ul = document.getElementById("beer_ounce");
+            append(ul,span_ounce);
+            ul = document.getElementById("add_column");
+            append(ul,span2); 
+            ul = document.getElementById("subtract_column");
+            append(ul,span3);
+        
+      }
+      sessionStorage.setItem('foods',JSON.stringify(foods));
+      return ;
+      }
+
+
+      $(document).ready($.getJSON(url, function(data) {
+        //console.log(data[0].name); // logs "b1"
+        //console.log(data[1].price); // logs "b2"
+
+        console.log(data.length);
+        
+        // var i=0;
+        var foods= [];
+        var s ="";
+        var cat = [];
+        var names = [];
+        const select = document.getElementById("styles");
+        for (i = 0; i < data.length; i++) {
+          //let div = createNode("div");
+          //if(data[i].abv== ""){
+           // alert("Null");
+          //} 
+          var food = {id:data[i].id,name:data[i].name,style:data[i].style,abv:data[i].abv,ibu:data[i].ibu,ounces:data[i].ounces};
+          //if(i!=data.length-1)
+          // s += JSON.stringify(food)+",";
+          //else s += JSON.stringify(food);
+          var p = data[i].style in cat;
+          if(cat.indexOf(data[i].style) == -1){
+              cat.push(data[i].style);
+              
+          } 
+          foods.push(food);
+          names.push(data[i].name);    
+          let span_name= createNode("span");
+          let span_style= createNode("span");
+          let span_ounce= createNode("span");
+          let span2 = createNode("span");
+          let span3 = createNode("span");
+
+          //let span4 = createNode("span");
+          span_name.innerHTML = `&nbsp${data[i].name}<br>`;
+          span_style.innerHTML = `${data[i].style}<br>`;
+          span_ounce.innerHTML = `${data[i].ounces}<br>`; 
+          span2.innerHTML = '+<br> ';
+          span3.innerHTML = '-<br>';
+
+          span2.setAttribute("id", "add");
+          span2.setAttribute("name", data[i].name);
+          span2.setAttribute("value", data[i].id);
+
+          span3.setAttribute("id", "subtract");
+          span3.setAttribute("name", data[i].name);
+          span3.setAttribute("value", data[i].id);
+          
+          let ul = document.getElementById("beer_name");
+          append(ul,span_name);
+          ul = document.getElementById("beer_style");
+          append(ul,span_style);
+          ul = document.getElementById("beer_ounce");
+          append(ul,span_ounce);
+          ul = document.getElementById("add_column");
+          append(ul,span2); 
+          ul = document.getElementById("subtract_column");
+          append(ul,span3);
+        }
+              cat.sort();
+              for(i=0;i<cat.length;i++){
+              let option = createNode("option");
+              option.innerHTML = cat[i];
+              option.setAttribute("id","option1");
+              option.setAttribute("name",cat[i]);
+              option.setAttribute("value",cat[i]);
+              append(select,option);
+            }
+        sessionStorage.setItem('foods_constant',JSON.stringify(foods));
+        sessionStorage.setItem('foods',JSON.stringify(foods));
+        sessionStorage.setItem('names',names);
+      }));
+      
+    </script>
+    <script>
+      var dict = {};
+      var total = 0;
+      function toggle(total){
+        //var s = sessionStorage.getItem('foods');
+        //var s1 = JSON.parse(s);
+        
+        //console.log(s1[0].name);
+        let b = document.getElementById("checkout");
+        if(total == 0){
+           b.style.display = 'none';
+        }
+        else b.style.display = 'block';
+      }
+      function print(){
+        var cart=[];
+        sessionStorage.removeItem('cart');
+      	let d = document.getElementById("profile_right");
+            for (var key in dict) {
+
+              if (dict.hasOwnProperty(key)) {
+              	if(dict[key]>0){
+
+                var s = document.createElement("span");
+                var s2 = document.createElement("span");
+
+                //let l = document.getElementsByName(dict["key"])[0];
+                //l = l.attr("value");
+                s.innerHTML = "&nbsp&nbsp"+key + "&nbsp&nbsp&nbsp&nbspx" + dict[key];
+                s2.innerHTML = '&nbsp&nbsp-<hr>';
+
+                s2.setAttribute("id", "subtract");
+                s2.setAttribute("name", key);
+                s2.setAttribute("value", key);
+                var food ={key:key,qty:dict[key]};
+                cart.push(food);
+                d.appendChild(s);
+                d.appendChild(s2);
+              }
+          }
+            }
+            sessionStorage.setItem('cart',JSON.stringify(cart));
+            var r = document.createElement("span");
+            r.innerHTML = "&nbsp&nbsp"+total;
+            d.appendChild(r);
+            toggle(total);
+
+      }
+      $(document).ready(function() {
+        $(document).on('click', '#add', function(e) {
+          var name = ($(this).attr("name"));
+          //var val = parseInt(($(this).attr("value")));
+          total ++;
+          //console.log(name +" "+ val);
+          var p = name in dict;
+          document.getElementById("profile_right").innerHTML="";
+          //d.innerHTML() = "";
+          if (p) {
+            dict[name]++;
+            print();
+          } else {
+            dict[name] = 1;
+            print();
+          }
+          e.preventDefault();
+        });
+        $(document).on('click', '#subtract', function(e) {
+          //console.log($(this).name);
+          var name = ($(this).attr("name"));
+          //var val = parseInt(($(this).attr("value")));
+          //console.log(name +" "+ val);
+          var p = name in dict;
+          
+          if (p && dict[name]>0) {
+          	document.getElementById("profile_right").innerHTML="";
+            total--;
+            dict[name]--;
+           print(); 
+          } 
+
+          e.preventDefault();
+        });
+        
+      });
+    </script>
+    <script type="text/javascript">
+      $(document).on('click', '#option1', function(e) {
+          console.log("here");
+          var name = ($(this).attr("value"));
+          //var val = parseInt(($(this).attr("value")));
+          //console.log(name +" "+ val);
+          print_with_name(name);
+          e.preventDefault();
+        });
+
+    </script>
+    
+  </body>
+
+</html>
